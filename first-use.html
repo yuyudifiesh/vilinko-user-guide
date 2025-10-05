@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>引导页面</title>
+    <title>第一次使用用户引导</title>
     <meta name="color-scheme" content="light dark">
     <meta name="supported-color-schemes" content="light dark">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -271,16 +271,16 @@
         </div>
     </div>
 
-    <!-- 大图查看器 -->
+    <!-- img.webview -->
     <div id="imageViewer" class="image-viewer" onclick="closeImageViewer(event)">
         <div class="image-viewer-content">
             <span class="image-viewer-close" onclick="closeImageViewer(event)"><i class="fa fa-times"></i></span>
-            <img id="viewerImage" src="" alt="大图查看">
+            <img id="viewerImage" src="" alt="大图查看" draggable="false">
         </div>
     </div>
 
     <script>
-        // 图片预加载函数
+        // 图片预加载
         function preloadImages() {
             const imageUrls = [
                 'source/img/yindao/1shouye1.png',
@@ -290,24 +290,21 @@
                 'source/img/yindao/5gengduo.png'
             ];
             
-            // 预加载所有图片
+            // 预加载
             imageUrls.forEach(url => {
                 const img = new Image();
                 img.src = url;
-                // 图片加载完成后不做额外操作，因为每个img标签都有自己的onload处理器
             });
         }
         
-        // 隐藏加载遮罩的函数
+        // 隐藏加载遮罩
         function hideLoadingMask(imgElement) {
-            // 找到父容器中的加载遮罩
             const loadingMask = imgElement.parentElement.querySelector('.img-loading-mask');
             if (loadingMask) {
-                // 添加淡出效果
                 loadingMask.style.opacity = '0';
                 setTimeout(() => {
                     loadingMask.style.visibility = 'hidden';
-                }, 300); // 等待淡出动画完成
+                }, 300);
             }
         }
 
@@ -316,15 +313,19 @@
             const viewer = document.getElementById('imageViewer');
             const viewerImg = document.getElementById('viewerImage');
             
-            // 设置大图路径
             viewerImg.src = imgElement.src;
             viewerImg.alt = imgElement.alt;
             
-            // 显示查看器
             viewer.classList.add('active');
             
-            // 禁止页面滚动
             document.body.style.overflow = 'hidden';
+            
+            viewerImg.onmousedown = function(e) {
+                e.preventDefault();
+            };
+            viewerImg.ondragstart = function(e) {
+                e.preventDefault();
+            };
         }
 
         // 关闭大图查看器
@@ -332,14 +333,12 @@
             const viewer = document.getElementById('imageViewer');
             const viewerContent = viewer.querySelector('.image-viewer-content');
             
-            // 如果点击的是查看器背景或关闭按钮，则关闭
             if (event.target === viewer || event.target.closest('.image-viewer-close')) {
                 viewer.classList.remove('active');
                 document.body.style.overflow = 'auto';
             }
         }
         
-        // 页面加载完成后开始预加载图片
         window.addEventListener('DOMContentLoaded', () => {
             preloadImages();
         });
@@ -369,7 +368,6 @@
                 }
             });
             
-            // 控制按钮显示
             prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
         }
         
@@ -395,13 +393,10 @@
             nextSlide.style.transform = direction === 'next' ? 'translateX(100%)' : 'translateX(-100%)';
             nextSlide.classList.add('active');
             
-            // 强制重排以确保动画正常工作
             void nextSlide.offsetWidth;
             
-            // 设置当前幻灯片离开动画
             slides[oldIndex].style.transform = direction === 'next' ? 'translateX(-100%)' : 'translateX(100%)';
             
-            // 设置下一张幻灯片进入动画
             nextSlide.style.transform = 'translateX(0)';
             
             // 更新指示器
@@ -415,12 +410,9 @@
                 }
             });
             
-            // 控制按钮显示
             prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
             
-            // 动画结束后重置状态
             setTimeout(() => {
-                // 隐藏已经离开的幻灯片（除了相邻的幻灯片，保持它们在适当位置）
                 slides.forEach((slide, index) => {
                     if (index !== currentIndex && index !== oldIndex) {
                         if (index > currentIndex) {
@@ -446,35 +438,26 @@
             currentIndex = index;
             const direction = index > oldIndex ? 'next' : 'prev';
             
-            // 准备所有幻灯片位置
             slides.forEach((slide, i) => {
-                // 确保所有幻灯片都正确设置了过渡
                 slide.style.transition = 'transform 0.5s ease-out';
                 
                 if (i === currentIndex) {
-                    // 设置目标幻灯片的初始位置
                     slide.style.transform = direction === 'next' ? 'translateX(100%)' : 'translateX(-100%)';
                     slide.classList.add('active');
                 } else if (i === oldIndex) {
-                    // 保持当前幻灯片位置不变
                     slide.classList.add('active');
                 } else {
-                    // 隐藏其他幻灯片
                     slide.style.transform = i > currentIndex ? 'translateX(100%)' : 'translateX(-100%)';
                     slide.classList.remove('active');
                 }
             });
             
-            // 强制重排以确保动画正常工作
             void slides[currentIndex].offsetWidth;
-            
-            // 设置当前幻灯片离开动画
+
             slides[oldIndex].style.transform = direction === 'next' ? 'translateX(-100%)' : 'translateX(100%)';
             
-            // 设置目标幻灯片进入动画
             slides[currentIndex].style.transform = 'translateX(0)';
             
-            // 更新指示器
             indicators.forEach((indicator, i) => {
                 if (i === currentIndex) {
                     indicator.classList.add('bg-gray-800', 'opacity-100');
@@ -485,12 +468,9 @@
                 }
             });
             
-            // 控制按钮显示
             prevBtn.style.display = currentIndex === 0 ? 'none' : 'flex';
             
-            // 动画结束后重置状态
             setTimeout(() => {
-                // 确保所有非当前幻灯片都在正确位置
                 slides.forEach((slide, i) => {
                     if (i !== currentIndex) {
                         slide.style.transform = i > currentIndex ? 'translateX(100%)' : 'translateX(-100%)';
@@ -520,14 +500,6 @@
                 goToSlide(index);
             });
         });
-        
-        // 开始使用按钮
-        if (startBtn) {
-            startBtn.addEventListener('click', () => {
-                // 这里可以添加开始使用后的逻辑，比如跳转到主页
-                alert('开始使用应用！');
-            });
-        }
         
         // 键盘导航
         document.addEventListener('keydown', (e) => {
